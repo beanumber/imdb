@@ -60,9 +60,9 @@ etl_load.etl_imdb <- function(obj, path_to_imdbpy2sql = NULL, ...) {
   
   db_info <- DBI::dbGetInfo(obj$con)
   
-  if ("src_postgres" %in% class(obj$con)) {
+  if ("src_postgres" %in% class(obj)) {
     db_type <- "postgres"
-  } else if ("src_mysql" %in% class(obj$con)) {
+  } else if ("src_mysql" %in% class(obj)) {
     db_type <- "mysql"
   } else {
     db_type <- "sqlite"
