@@ -2,7 +2,7 @@
 #' 
 #' @description A utility function to locate the \code{imdbpy2sql} Python script
 #' 
-#' @param temp.dir directory where you want the IMDBPy script to reside
+#' @param temp_dir directory where you want the IMDBPy script to reside
 #' 
 #' @return a path to the unzipped, executable script
 #' 
@@ -13,9 +13,9 @@
 #' script <- findimdbpy2sql()
 
 
-findimdbpy2sql <- function(temp.dir = tempdir()) {
+findimdbpy2sql <- function(temp_dir = tempdir()) {
   
-  local <- paste0(temp.dir, "/imdbpy2sql.py.gz")
+  local <- paste0(temp_dir, "/imdbpy2sql.py.gz")
   script <- gsub(".gz", "", local)
   
   if (!file.exists(script)) {

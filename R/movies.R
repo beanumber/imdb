@@ -2,44 +2,82 @@
 #' 
 #' @description Download the raw data files from IMDB
 #' 
+#' @inheritParams etl::etl_extract
 #' @param tables a character vector of files from IMDB to download. The default is
-#' movies, actors, actresses, and directors. There are 49 total files available on IMDB.
-#' @param temp.dir a directory where you want to store the download files. 
+#' movies, actors, actresses, and directors. These four files alone will occupy
+#' more than 500 MB of disk space. There are 49 total files available 
+#' on IMDB. See \url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/} for the
+#' complete list. 
 #' 
-#' @return An integer indicating the number of files present in \code{temp.dir} whose
-#' filenames match those on IMDB. 
-#' 
+#' @import etl
 #' @export
 #' @examples
-#' 
+#' #' 
 #' if (require(RPostgreSQL) & require(dplyr)) {
 #'  # must have pre-existing database "airlines"
 #'  db <- src_postgres(host = "localhost", user="postgres", password="postgres", dbname = "imdb")
 #' }
+#' 
+#' imdb <- etl("imdb")
+#' 
 #' \dontrun{
-#'   getMovies(temp.dir = "~/dumps/imdb")
+#'   imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
+#'   imdb %>%
+#'     etl_extract(tables = "movies") %>%
+#'     etl_load()
 #' }
-#' 
+#' @source \url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/}
 #' 
 
 
-getMovies <- function (tables = c("movies.list.gz", "actors.list.gz", "actresses.list.gz", "directors.list.gz"), temp.dir = tempdir()) {
+etl_extract.etl_imdb <- function(obj, tables = 
+                                   c("movies", "actors", "actresses", "directors"), ...) {
   
   src <- "ftp://ftp.fu-berlin.de/pub/misc/movies/database/"
   
-  file.list <- read.csv(paste0(src, "filesizes"), sep = " ", header=FALSE)
-  files <- paste0(as.character(file.list$V1), ".gz")
+  file_list <- read.csv(paste0(src, "filesizes"), sep = " ", header = FALSE)
+  files <- paste0(as.character(file_list$V1), ".gz")
   
   if (!is.null(tables)) {
-    files <- intersect(tables, files)
+    files <- intersect(paste0(tables, ".list.gz"), files)
   }
   
-  for (file in files) {
-    remote <- paste0(src, file)
-    local <- paste0(temp.dir, "/", file)
-    download.file(remote, destfile = local)
-  }
-  files
-  numFiles <- length(intersect(files, list.files(temp.dir)))
-  return(numFiles)
+  remotes <- paste0(src, files)
+  locals <- paste0(attr(obj, "raw_dir"), "/", files)
+  mapply(download.file, remotes, locals)
+  
+  invisible(obj)
 }
+
+#' @rdname etl_extract.etl_imdb
+#' @param path_to_imdbpy2sql a path to the IMDB2SQL Python script provided by
+#' IMDBPy. If NULL -- the default -- will attempt to find it using \code{\link{findimdbpy2sql}}.
+#' @export
+#' @importFrom DBI dbGetInfo
+
+
+etl_load.etl_imdb <- function(obj, path_to_imdbpy2sql = NULL, ...) {
+  
+  db_info <- DBI::dbGetInfo(obj$con)
+  
+  if ("src_postgres" %in% class(obj$con)) {
+    db_type <- "postgres"
+  } else if ("src_mysql" %in% class(obj$con)) {
+    db_type <- "mysql"
+  } else {
+    db_type <- "sqlite"
+  }
+  
+  dsn <- paste0(db_type, "://", db_info$user, ":@", db_info$host, "/", db_info$dbname)
+  
+  if (is.null(path_to_imdbpy2sql)) {
+    path_to_imdbpy2sql <- findimdbpy2sql(attr(obj, "dir"))
+  }
+  # needed python modules: sqlalchemy, sqlojbect, psycog2
+  cmd <- paste0(path_to_imdbpy2sql, " -d ", attr(obj, "raw_dir"), " -u '", dsn, "'")
+  message(paste("Running", cmd))
+  system(cmd)
+  invisible(obj)
+}
+
+

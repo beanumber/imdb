@@ -1,0 +1,26 @@
+# Sample .travis.yml for R projects
+
+language: r
+warnings_are_errors: true
+sudo: required
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
+
+# System dependencies for HTTP calling
+apt_packages:
+ - python-imdbpy
+ - python-sqlalchemy
+ - python-sqlobject
+ - python-psycopg2
+ 
+r_binary_packages:
+ - dplyr
+ 
+ # Install the bleeding edge version of a package from github (eg to pick
+# up a not-yet-released bugfix)
+r_github_packages:
+ - beanumber/etl
+ 
