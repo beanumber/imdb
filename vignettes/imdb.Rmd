@@ -17,7 +17,7 @@ library(imdb)
 
 Next, we have to make a connection to a SQL server. Note that the `imdb` database should be created ahead of time. 
 
-```{r, message=FALSE}
+```{r, eval=FALSE, message=FALSE}
 if (require(RPostgreSQL)) {
   # must have pre-existing database "imdb"
   db <- src_postgres(host = "localhost", user = "postgres", password = "postgres", dbname = "imdb_fresh")
