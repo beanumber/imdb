@@ -12,29 +12,32 @@ vignette: >
 Since you will be downloading lots of data, you may want to specify a directory to store it all
 
 ```{r}
-mydir <- "~/dumps/imdb"
-```
-
-Download the data -- this may take a while. There are 49 files that take up approximately 1.6 GB on disk.
-
-```{r, eval=FALSE}
-getMovies(temp.dir = "~/dumps/imdb")
+library(imdb)
 ```
 
 Next, we have to make a connection to a SQL server. Note that the `imdb` database should be created ahead of time. 
 
 ```{r, message=FALSE}
-if (require(RPostgreSQL) & require(dplyr)) {
+if (require(RPostgreSQL)) {
   # must have pre-existing database "imdb"
-  db <- src_postgres(host = "localhost", user = "postgres", password = "postgres", dbname = "imdb")
+  db <- src_postgres(host = "localhost", user = "postgres", password = "postgres", dbname = "imdb_fresh")
 }
+```
+
+```{r, eval=FALSE}
+imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
+```
+
+Download the data -- this may take a while. There are 49 files that take up approximately 1.6 GB on disk.
+
+```{r, eval=FALSE}
+imdb %>%
+  etl_extract()
 ```
 
 Now process these raw data files and pump them into this `db`. This can take a loooong time. For the full set of files it took about 54 hours!
 
 ```{r, eval=FALSE}
-imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
 imdb %>%
-  etl_extract() %>%
   etl_load()
 ```

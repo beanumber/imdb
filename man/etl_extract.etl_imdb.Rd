@@ -5,7 +5,9 @@
 \alias{etl_load.etl_imdb}
 \title{movies}
 \source{
-\url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/}
+IMDB: \url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/}
+
+IMDbPy: \url{http://imdbpy.sourceforge.net/}
 }
 \usage{
 \method{etl_extract}{etl_imdb}(obj, tables = c("movies", "actors",
@@ -32,7 +34,7 @@ Download the raw data files from IMDB
 }
 \examples{
 #' 
-if (require(RPostgreSQL) & require(dplyr)) {
+if (require(RPostgreSQL)) {
  # must have pre-existing database "airlines"
  db <- src_postgres(host = "localhost", user="postgres", password="postgres", dbname = "imdb")
 }

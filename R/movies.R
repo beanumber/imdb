@@ -13,7 +13,7 @@
 #' @export
 #' @examples
 #' #' 
-#' if (require(RPostgreSQL) & require(dplyr)) {
+#' if (require(RPostgreSQL)) {
 #'  # must have pre-existing database "airlines"
 #'  db <- src_postgres(host = "localhost", user="postgres", password="postgres", dbname = "imdb")
 #' }
@@ -26,7 +26,8 @@
 #'     etl_extract(tables = "movies") %>%
 #'     etl_load()
 #' }
-#' @source \url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/}
+#' @source IMDB: \url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/}
+#' @source IMDbPy: \url{http://imdbpy.sourceforge.net/}
 #' 
 
 

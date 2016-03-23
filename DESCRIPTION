@@ -1,6 +1,6 @@
 Package: imdb
 Title: Populate a database with data from the IMDB
-Version: 0.0.1.9000
+Version: 0.0.1.9001
 Authors@R: person("Ben", "Baumer", email = "ben.baumer@gmail.com",
                   role = c("aut", "cre"))
 Description: Populate a database with data from the IMDB. This package will
@@ -18,7 +18,8 @@ Suggests:
     RPostgreSQL,
     RMySQL,
     RSQLite,
-    knitr
+    knitr,
+    rmarkdown
 License: GPL (>=2)
 URL: https://github.com/beanumber/imdb
 BugReports: https://github.com/beanumber/imdb/issues
