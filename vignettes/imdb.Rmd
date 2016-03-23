@@ -32,11 +32,11 @@ imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
 
 ### Performing the ETL steps
 
-The first phase is to **E**xtract the data from IMDB. This may take a while. There are 49 files that take up approximately 2 GB on disk. By default, only the `movies`, `actors`, `actresses`, and `directors` files will be downloaded, but even these take up more then 500 MB of disk space. 
+The first phase is to **E**xtract the data from IMDB. This may take a while. There are 49 files that take up approximately 2 GB on disk. By default, only the `movies`, `actors`, `actresses`, and `directors` files will be downloaded, but even these take up more than 500 MB of disk space. 
 
 ```{r, eval=FALSE}
 imdb %>%
-  etl_extract()
+  etl_extract(tables = c("movies"))
 ```
 
 Mercifully, there is no **T**ransform phase for these data. However, the **L**oad phase can take a loooooong time. 

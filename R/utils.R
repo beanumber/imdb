@@ -34,7 +34,7 @@ findimdbpy2sql <- function(temp_dir = tempdir()) {
     stop(paste0("Sorry, I can't find the script at: ", script))
   }
   
-  if (!file.access(script, mode = 1)) {
+  if (file.access(script, mode = 1) < 0) {
     # make the file executable
     Sys.chmod(script, mode = "755")
   }
