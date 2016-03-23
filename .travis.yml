@@ -15,6 +15,7 @@ apt_packages:
  - python-sqlalchemy
  - python-sqlobject
  - python-psycopg2
+ - python-mysqldb
  
 r_binary_packages:
  - dplyr

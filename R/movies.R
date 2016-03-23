@@ -59,6 +59,12 @@ etl_extract.etl_imdb <- function(obj, tables =
 #' @rdname etl_extract.etl_imdb
 #' @param path_to_imdbpy2sql a path to the IMDB2SQL Python script provided by
 #' IMDBPy. If NULL -- the default -- will attempt to find it using \code{\link{findimdbpy2sql}}.
+#' @details 
+#' For best performance, set the MySQL default collation to \code{utf8_unicode_ci}.
+#' See the IMDbPy2sql documentation at 
+#' \url{http://imdbpy.sourceforge.net/docs/README.sqldb.txt} for more details. 
+#' 
+#' Please be aware that IMDB contains information about *all* types of movies.
 #' @export
 #' @importFrom DBI dbGetInfo
 
@@ -69,10 +75,13 @@ etl_load.etl_imdb <- function(obj, schema = TRUE, path_to_imdbpy2sql = NULL, ...
   
   if ("src_postgres" %in% class(obj)) {
     db_type <- "postgres"
+    args <- " "
   } else if ("src_mysql" %in% class(obj)) {
     db_type <- "mysql"
+    args <- " --mysql-force-myisam"
   } else {
     db_type <- "sqlite"
+    args <- " --sqlite-transactions"
   }
   
   dsn <- paste0(db_type, "://", db_info$user, ":@", db_info$host, "/", db_info$dbname)
@@ -81,7 +90,7 @@ etl_load.etl_imdb <- function(obj, schema = TRUE, path_to_imdbpy2sql = NULL, ...
     path_to_imdbpy2sql <- findimdbpy2sql(attr(obj, "dir"))
   }
   # needed python modules: sqlalchemy, sqlojbect, psycog2
-  cmd <- paste0(path_to_imdbpy2sql, " -d ", attr(obj, "raw_dir"), " -u '", dsn, "'")
+  cmd <- paste0(path_to_imdbpy2sql, args, " -d ", attr(obj, "raw_dir"), " -u '", dsn, "'")
   message(paste("Running", cmd))
   system(cmd)
   invisible(obj)

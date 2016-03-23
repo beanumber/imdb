@@ -45,6 +45,13 @@ IMDBPy. If NULL -- the default -- will attempt to find it using \code{\link{find
 \description{
 Download the raw data files from IMDB
 }
+\details{
+For best performance, set the MySQL default collation to \code{utf8_unicode_ci}.
+See the IMDbPy2sql documentation at 
+\url{http://imdbpy.sourceforge.net/docs/README.sqldb.txt} for more details. 
+
+Please be aware that IMDB contains information about *all* types of movies.
+}
 \examples{
 # Connect using default RSQLite database
 imdb <- etl("imdb")
