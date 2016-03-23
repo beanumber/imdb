@@ -9,35 +9,55 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Since you will be downloading lots of data, you may want to specify a directory to store it all
+## Roll your own IMDB SQL database
 
-```{r}
+```{r, message=FALSE}
 library(imdb)
 ```
 
-Next, we have to make a connection to a SQL server. Note that the `imdb` database should be created ahead of time. 
+Since the IMDB is very large (many gigabytes), it is best to store the data in a persistent SQL database. By default, `etl` will create an `RSQLite` for you in a temp directory -- but this is not a very safe place to store these data. Instead, we will connect to an existing (but empty) PostgreSQL database. 
 
 ```{r, eval=FALSE, message=FALSE}
 if (require(RPostgreSQL)) {
-  # must have pre-existing database "imdb"
+  # must have pre-existing database "imdb_fresh"
   db <- src_postgres(host = "localhost", user = "postgres", password = "postgres", dbname = "imdb_fresh")
 }
 ```
+
+Since you will be downloading lots of data, you will probably want to specify a directory to store the raw data (which will take up several gigabytes on disk). Again, `etl` will create a directory for you if you don't, but that directory will be in a temp directory that is not safe. 
 
 ```{r, eval=FALSE}
 imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
 ```
 
-Download the data -- this may take a while. There are 49 files that take up approximately 1.6 GB on disk.
+### Performing the ETL steps
+
+The first phase is to **E**xtract the data from IMDB. This may take a while. There are 49 files that take up approximately 2 GB on disk. By default, only the `movies`, `actors`, `actresses`, and `directors` files will be downloaded, but even these take up more then 500 MB of disk space. 
 
 ```{r, eval=FALSE}
 imdb %>%
   etl_extract()
 ```
 
-Now process these raw data files and pump them into this `db`. This can take a loooong time. For the full set of files it took about 54 hours!
+Mercifully, there is no **T**ransform phase for these data. However, the **L**oad phase can take a loooooong time. 
+
+The load phase leverages the Python module `IMDbPy`, which also has external dependencies. Please see the [.travis.yml](https://github.com/beanumber/imdb/blob/master/.travis.yml) file for a list of those dependencies (on Ubuntu -- your configuration may be different). 
+
+You'll want to leave this running overnight. To load the full set of files it took about 54 hours!
 
 ```{r, eval=FALSE}
 imdb %>%
   etl_load()
 ```
+
+## Query the database
+
+Once everything is completed, you can query your fresh copy of the IMDB.
+
+```{r, eval=FALSE}
+movies <- imdb %>%
+  tbl("title")
+movies %>%
+  filter(title == "Star Wars")
+```
+
