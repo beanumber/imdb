@@ -1,4 +1,9 @@
-# IMDB
+---
+title: "IMDB"
+output:
+  html_document:
+    keep_md: true
+---
 
 [![Travis-CI Build Status](https://travis-ci.org/beanumber/imdb.svg?branch=master)](https://travis-ci.org/beanumber/imdb)
 
@@ -7,8 +12,7 @@ R package to load the IMDB into a SQL database.
 
 ## Installation
 
-
-```r
+```{r, message=FALSE, eval=FALSE}
 install.packages("devtools")
 devtools::install_github("beanumber/etl")
 devtools::install_github("beanumber/imdb")
@@ -21,8 +25,7 @@ There are also external dependencies, namely the Python module `IMDbPy`. Please 
 
 Since the IMDB is very large (many gigabytes), it is best to store the data in a persistent SQL database. By default, `etl` will create an `RSQLite` for you in a temp directory -- but this is not a very safe place to store these data. Instead, we will connect to an existing (but empty) PostgreSQL database. 
 
-
-```r
+```{r, eval=FALSE, message=FALSE}
 if (require(RPostgreSQL)) {
   # must have pre-existing database "imdb_fresh"
   db <- src_postgres(host = "localhost", user = "postgres", password = "postgres", dbname = "imdb_fresh")
@@ -31,8 +34,7 @@ if (require(RPostgreSQL)) {
 
 Since you will be downloading lots of data, you will probably want to specify a directory to store the raw data (which will take up several gigabytes on disk). Again, `etl` will create a directory for you if you don't, but that directory will be in a temp directory that is not safe. 
 
-
-```r
+```{r, eval=FALSE}
 imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
 ```
 
@@ -40,8 +42,7 @@ imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
 
 The first phase is to **E**xtract the data from IMDB. This may take a while. There are 49 files that take up approximately 2 GB on disk. By default, only the `movies`, `actors`, `actresses`, and `directors` files will be downloaded, but even these take up more then 500 MB of disk space. 
 
-
-```r
+```{r, eval=FALSE}
 imdb %>%
   etl_extract()
 ```
@@ -52,8 +53,7 @@ The load phase leverages the Python module `IMDbPy`, which also has external dep
 
 You'll want to leave this running overnight. To load the full set of files it took about 54 hours!
 
-
-```r
+```{r, eval=FALSE}
 imdb %>%
   etl_load()
 ```
@@ -62,8 +62,7 @@ imdb %>%
 
 Once everything is completed, you can query your fresh copy of the IMDB.
 
-
-```r
+```{r, eval=FALSE}
 movies <- imdb %>%
   tbl("title")
 movies %>%
