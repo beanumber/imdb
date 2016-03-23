@@ -20,7 +20,7 @@ Since the IMDB is very large (many gigabytes), it is best to store the data in a
 ```{r, eval=FALSE, message=FALSE}
 if (require(RPostgreSQL)) {
   # must have pre-existing database "imdb_fresh"
-  db <- src_postgres(host = "localhost", user = "postgres", password = "postgres", dbname = "imdb_fresh")
+  db <- src_postgres(host = "localhost", user = "postgres", password = "postgres", dbname = "imdb")
 }
 ```
 

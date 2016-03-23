@@ -8,6 +8,8 @@
 #' more than 500 MB of disk space. There are 49 total files available 
 #' on IMDB. See \url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/} for the
 #' complete list. 
+#' @param all.tables a logical indicating whether you want to download all of 
+#' the tables. Default is \code{FALSE}.
 #' 
 #' @import etl
 #' @export
@@ -32,12 +34,16 @@
 
 
 etl_extract.etl_imdb <- function(obj, tables = 
-                                   c("movies", "actors", "actresses", "directors"), ...) {
+                                   c("movies", "actors", "actresses", "directors"), all.tables = FALSE, ...) {
   
   src <- "ftp://ftp.fu-berlin.de/pub/misc/movies/database/"
   
   file_list <- read.csv(paste0(src, "filesizes"), sep = " ", header = FALSE)
   files <- paste0(as.character(file_list$V1), ".gz")
+  
+  if (all.tables) {
+    tables <- gsub("\\.list\\.gz", "", files)
+  }
   
   if (!is.null(tables)) {
     files <- intersect(paste0(tables, ".list.gz"), files)

@@ -11,7 +11,7 @@ IMDbPy: \url{http://imdbpy.sourceforge.net/}
 }
 \usage{
 \method{etl_extract}{etl_imdb}(obj, tables = c("movies", "actors",
-  "actresses", "directors"), ...)
+  "actresses", "directors"), all.tables = FALSE, ...)
 
 \method{etl_load}{etl_imdb}(obj, schema = TRUE, path_to_imdbpy2sql = NULL,
   ...)
@@ -24,6 +24,9 @@ movies, actors, actresses, and directors. These four files alone will occupy
 more than 500 MB of disk space. There are 49 total files available 
 on IMDB. See \url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/} for the
 complete list.}
+
+\item{all.tables}{a logical indicating whether you want to download all of 
+the tables. Default is \code{FALSE}.}
 
 \item{...}{arguments passed to methods}
 
