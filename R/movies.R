@@ -12,15 +12,15 @@
 #' @import etl
 #' @export
 #' @examples
-#' #' 
-#' if (require(RPostgreSQL)) {
-#'  # must have pre-existing database "airlines"
-#'  db <- src_postgres(host = "localhost", user="postgres", password="postgres", dbname = "imdb")
-#' }
-#' 
+#' # Connect using default RSQLite database
 #' imdb <- etl("imdb")
 #' 
+#' # Connect using pre-configured PostgreSQL database
 #' \dontrun{
+#'  if (require(RPostgreSQL)) {
+#'    # must have pre-existing database "airlines"
+#'    db <- src_postgres(host = "localhost", user="postgres", password="postgres", dbname = "imdb")
+#'   }
 #'   imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
 #'   imdb %>%
 #'     etl_extract(tables = "movies") %>%
@@ -57,7 +57,7 @@ etl_extract.etl_imdb <- function(obj, tables =
 #' @importFrom DBI dbGetInfo
 
 
-etl_load.etl_imdb <- function(obj, path_to_imdbpy2sql = NULL, ...) {
+etl_load.etl_imdb <- function(obj, schema = TRUE, path_to_imdbpy2sql = NULL, ...) {
   
   db_info <- DBI::dbGetInfo(obj$con)
   

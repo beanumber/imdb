@@ -13,7 +13,8 @@ IMDbPy: \url{http://imdbpy.sourceforge.net/}
 \method{etl_extract}{etl_imdb}(obj, tables = c("movies", "actors",
   "actresses", "directors"), ...)
 
-\method{etl_load}{etl_imdb}(obj, path_to_imdbpy2sql = NULL, ...)
+\method{etl_load}{etl_imdb}(obj, schema = TRUE, path_to_imdbpy2sql = NULL,
+  ...)
 }
 \arguments{
 \item{obj}{an \code{\link{etl}} object}
@@ -26,6 +27,15 @@ complete list.}
 
 \item{...}{arguments passed to methods}
 
+\item{schema}{Either a logical, a filename pointing to SQL schema file, or a character
+vector containing the schema itself. If \code{schema = TRUE}, then the built-in
+schema will be used. Note
+that the flavor of SQL in this file must match the type of the source. That is,
+if your object is of type \code{\link[dplyr]{src_mysql}}, then make sure that
+the schema you specify here is written in MySQL (and not PostgreSQL). Please
+note that SQL syntax is not, in general, completely portable. Use with caution, as this may
+clobber any existing data you have in an existing database.}
+
 \item{path_to_imdbpy2sql}{a path to the IMDB2SQL Python script provided by
 IMDBPy. If NULL -- the default -- will attempt to find it using \code{\link{findimdbpy2sql}}.}
 }
@@ -33,15 +43,15 @@ IMDBPy. If NULL -- the default -- will attempt to find it using \code{\link{find
 Download the raw data files from IMDB
 }
 \examples{
-#' 
-if (require(RPostgreSQL)) {
- # must have pre-existing database "airlines"
- db <- src_postgres(host = "localhost", user="postgres", password="postgres", dbname = "imdb")
-}
-
+# Connect using default RSQLite database
 imdb <- etl("imdb")
 
+# Connect using pre-configured PostgreSQL database
 \dontrun{
+ if (require(RPostgreSQL)) {
+   # must have pre-existing database "airlines"
+   db <- src_postgres(host = "localhost", user="postgres", password="postgres", dbname = "imdb")
+  }
   imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
   imdb \%>\%
     etl_extract(tables = "movies") \%>\%
