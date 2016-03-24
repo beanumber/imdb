@@ -89,8 +89,10 @@ etl_load.etl_imdb <- function(obj, schema = TRUE, path_to_imdbpy2sql = NULL, ...
   if (is.null(path_to_imdbpy2sql)) {
     path_to_imdbpy2sql <- findimdbpy2sql(attr(obj, "dir"))
   }
-  # needed python modules: sqlalchemy, sqlojbect, psycog2
-  cmd <- paste0(path_to_imdbpy2sql, args, " -d ", attr(obj, "raw_dir"), " -u '", dsn, "'")
+  # needed python modules: sqlalchemy, sqlojbect, psycopg2, mysqldb
+  cmd <- paste0(path_to_imdbpy2sql, args, " -d ", 
+                attr(obj, "raw_dir"), " -u '", dsn, "'",
+                " -c ", attr(obj, "raw_dir"))
   message(paste("Running", cmd))
   system(cmd)
   invisible(obj)
