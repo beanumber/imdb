@@ -3,6 +3,8 @@
 \name{etl_extract.etl_imdb}
 \alias{etl_extract.etl_imdb}
 \alias{etl_load.etl_imdb}
+\alias{etl_load_data}
+\alias{etl_load_data.src_mysql}
 \title{movies}
 \source{
 IMDB: \url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/}
@@ -14,7 +16,11 @@ IMDbPy: \url{http://imdbpy.sourceforge.net/}
   "actresses", "directors"), all.tables = FALSE, ...)
 
 \method{etl_load}{etl_imdb}(obj, schema = TRUE, path_to_imdbpy2sql = NULL,
-  ...)
+  password = "", ...)
+
+etl_load_data(obj, ...)
+
+\method{etl_load_data}{src_mysql}(obj, ...)
 }
 \arguments{
 \item{obj}{an \code{\link{etl}} object}
@@ -41,6 +47,9 @@ clobber any existing data you have in an existing database.}
 
 \item{path_to_imdbpy2sql}{a path to the IMDB2SQL Python script provided by
 IMDBPy. If NULL -- the default -- will attempt to find it using \code{\link{findimdbpy2sql}}.}
+
+\item{password}{Must re-enter password unless your password is blank. The real
+password will not be shown in messages.}
 }
 \description{
 Download the raw data files from IMDB
@@ -59,13 +68,41 @@ imdb <- etl("imdb")
 # Connect using pre-configured PostgreSQL database
 \dontrun{
  if (require(RPostgreSQL)) {
-   # must have pre-existing database "airlines"
+   # must have pre-existing database "imdb"
    db <- src_postgres(host = "localhost", user="postgres", password="postgres", dbname = "imdb")
   }
   imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
   imdb \%>\%
     etl_extract(tables = "movies") \%>\%
     etl_load()
+}
+\dontrun{
+ if (require(RMySQL)) {
+   # must have pre-existing database "imdb"
+   db <- src_mysql(default.file = path.expand("~/.my.cnf"), 
+                   group = "scidb", user = NULL, password = NULL, dbname = "imdb")
+  }
+  imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
+  imdb \%>\%
+    etl_extract(tables = "movies") \%>\%
+    etl_load()
+    
+  movies <- imdb \%>\%
+    tbl("title") 
+  movies \%>\%
+    filter(title == 'star wars')
+    
+  people <- imdb \%>\%
+    tbl("name") 
+  roles <- imdb \%>\%
+    tbl("cast_info") 
+  movies \%>\%
+    inner_join(cast_info, by = c("id" = "movie_id")) \%>\%
+    inner_join(people, by = c("person_id" = "id")) \%>\%
+    filter(title == 'star wars') \%>\%
+    filter(production_year == 1977) \%>\%
+    arrange(nr_order)
+  
 }
 }
 

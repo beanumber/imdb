@@ -1,6 +1,6 @@
 Package: imdb
 Title: Populate a database with data from the IMDB
-Version: 0.0.2.9000
+Version: 0.0.2.9001
 Authors@R: person("Ben", "Baumer", email = "ben.baumer@gmail.com",
                   role = c("aut", "cre"))
 Description: Populate a database with data from the IMDB. This package will
@@ -9,12 +9,12 @@ Description: Populate a database with data from the IMDB. This package will
     the processed IMDB data into a SQL server of your specification.
 Imports:
     R.utils,
+    dplyr,
     DBI
 Depends:
     R (>= 3.1.0),
     etl
 Suggests:
-    dplyr,
     RPostgreSQL,
     RMySQL,
     RSQLite,

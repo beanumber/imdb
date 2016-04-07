@@ -1,24 +1,42 @@
 ---
 title: "IMDB"
 output:
-  html_document:
-    keep_md: true
+  md_document:
+    variant: markdown_github
 ---
 
 [![Travis-CI Build Status](https://travis-ci.org/beanumber/imdb.svg?branch=master)](https://travis-ci.org/beanumber/imdb)
 
 R package to load the IMDB into a SQL database. 
 
-## Installation
+## Getting Started
+
+`imdb` is a light package that leverages the the Python module [`IMDbPy`](https://github.com/alberanid/imdbpy) and the [`etl`](http://www.github.com/beanumber/etl) framework to make mirroring the IMDB in SQL painless, with user interaction taking place entirely within R. 
+
+### Prerequisities
+
+You must install the Python module [`IMDbPy`](http://imdbpy.sourceforge.net/), which also has external dependencies. For Ubuntu, the following command should install everything you need. Binaries for Mac OS X and Windows are available from the project's [Download](http://imdbpy.sourceforge.net/downloads.html) page. [You may want to consult the [.travis.yml](https://github.com/beanumber/imdb/blob/master/.travis.yml) file for a list of those dependencies.]
+
+```{bash, eval=FALSE}
+sudo apt-get install python-imdbpy python-sqlalchemy python-sqlobject python-psycopg2 python-mysqldb
+```
+
+You will also need to install the `etl` package from GitHub. 
 
 ```{r, message=FALSE, eval=FALSE}
 install.packages("devtools")
 devtools::install_github("beanumber/etl")
-devtools::install_github("beanumber/imdb")
 library(imdb)
 ```
 
-There are also external dependencies, namely the Python module `IMDbPy`. Please see below for instructions for installing this. 
+### Installation
+
+Similarly, `imdb` must be installed from GitHub.
+
+```{r, message=FALSE, eval=FALSE}
+devtools::install_github("beanumber/imdb")
+library(imdb)
+```
 
 ## Instantiate an object
 
@@ -50,11 +68,15 @@ Mercifully, there is no **T**ransform phase for these data. However, the **L**oa
 
 The load phase leverages the Python module `IMDbPy`, which also has external dependencies. Please see the [.travis.yml](https://github.com/beanumber/imdb/blob/master/.travis.yml) file for a list of those dependencies (on Ubuntu -- your configuration may be different). 
 
-You'll want to leave this running overnight. To load the full set of files it took about 54 hours!
+You'll want to leave this running overnight. To load the full set of files it took about 20 minutes!
 
 ```{r, eval=FALSE}
 imdb %>%
   etl_load()
+```
+
+```
+# TIME TOTAL TIME TO INSERT/WRITE DATA : 21min, 13sec (wall) 20min, 59sec (user) 0min, 8sec (system)
 ```
 
 ## Query the database
