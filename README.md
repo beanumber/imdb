@@ -64,7 +64,7 @@ Mercifully, there is no **T**ransform phase for these data. However, the **L**oa
 
 The load phase leverages the Python module `IMDbPy`, which also has external dependencies. Please see the [.travis.yml](https://github.com/beanumber/imdb/blob/master/.travis.yml) file for a list of those dependencies (on Ubuntu -- your configuration may be different).
 
-You'll want to leave this running overnight. To load the full set of files it took about 20 minutes!
+You may want to leave this running. To load the full set of files it took about 20 minutes and occupies about 9.5 gigabytes on disk.
 
 ``` r
 imdb %>%
@@ -72,6 +72,10 @@ imdb %>%
 ```
 
     # TIME TOTAL TIME TO INSERT/WRITE DATA : 21min, 13sec (wall) 20min, 59sec (user) 0min, 8sec (system)
+
+``` bash
+sudo ls -lhS /var/lib/mysql/imdb
+```
 
 Query the database
 ------------------
