@@ -7,8 +7,6 @@ output:
 
 [![Travis-CI Build Status](https://travis-ci.org/beanumber/imdb.svg?branch=master)](https://travis-ci.org/beanumber/imdb)
 
-R package to load the IMDB into a SQL database. 
-
 ## Getting Started
 
 `imdb` is a light package that leverages the the Python module [`IMDbPy`](https://github.com/alberanid/imdbpy) and the [`etl`](http://www.github.com/beanumber/etl) framework to make mirroring the IMDB in SQL painless, with user interaction taking place entirely within R. 
@@ -24,9 +22,7 @@ sudo apt-get install python-imdbpy python-sqlalchemy python-sqlobject python-psy
 You will also need to install the `etl` package from GitHub. 
 
 ```{r, message=FALSE, eval=FALSE}
-install.packages("devtools")
-devtools::install_github("beanumber/etl")
-library(imdb)
+install.packages("etl")
 ```
 
 ### Installation
@@ -35,23 +31,24 @@ Similarly, `imdb` must be installed from GitHub.
 
 ```{r, message=FALSE, eval=FALSE}
 devtools::install_github("beanumber/imdb")
+```
+
+```{r, message=FALSE}
 library(imdb)
 ```
 
 ## Instantiate an object
 
-Since the IMDB is very large (many gigabytes), it is best to store the data in a persistent SQL database. By default, `etl` will create an `RSQLite` for you in a temp directory -- but this is not a very safe place to store these data. Instead, we will connect to an existing (but empty) PostgreSQL database. 
+Since the IMDB is very large (many gigabytes), it is best to store the data in a persistent SQL database. By default, `etl` will create an `RSQLite` for you in a temp directory -- but this is not a very safe place to store these data. Instead, we will connect to an existing (but empty) MySQL database using a [local option file](https://dev.mysql.com/doc/refman/5.7/en/option-files.html). 
 
-```{r, eval=FALSE, message=FALSE}
-if (require(RPostgreSQL)) {
-  # must have pre-existing database "imdb_fresh"
-  db <- src_postgres(host = "localhost", user = "postgres", password = "postgres", dbname = "imdb_fresh")
-}
+```{r, eval=TRUE, message=FALSE}
+# must have pre-existing database "imdb"
+db <- src_mysql_cnf(dbname = "imdb")
 ```
 
 Since you will be downloading lots of data, you will probably want to specify a directory to store the raw data (which will take up several gigabytes on disk). Again, `etl` will create a directory for you if you don't, but that directory will be in a temp directory that is not safe. 
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
 ```
 
@@ -68,7 +65,7 @@ Mercifully, there is no **T**ransform phase for these data. However, the **L**oa
 
 The load phase leverages the Python module `IMDbPy`, which also has external dependencies. Please see the [.travis.yml](https://github.com/beanumber/imdb/blob/master/.travis.yml) file for a list of those dependencies (on Ubuntu -- your configuration may be different). 
 
-You may want to leave this running. To load the full set of files it took about 20 minutes and occupies about 9.5 gigabytes on disk. 
+You may want to leave this running. To load the full set of files it took about 20 minutes and occupied about 9.5 gigabytes on disk. 
 
 ```{r, eval=FALSE}
 imdb %>%
@@ -79,8 +76,8 @@ imdb %>%
 # TIME TOTAL TIME TO INSERT/WRITE DATA : 21min, 13sec (wall) 20min, 59sec (user) 0min, 8sec (system)
 ```
 
-```{bash, eval=FALSE}
-sudo ls -lhS /var/lib/mysql/imdb
+```{r, eval=TRUE}
+summary(imdb)
 ```
 
 ## Query the database

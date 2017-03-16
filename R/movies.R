@@ -21,7 +21,8 @@
 #' \dontrun{
 #'  if (require(RPostgreSQL)) {
 #'    # must have pre-existing database "imdb"
-#'    db <- src_postgres(host = "localhost", user="postgres", password="postgres", dbname = "imdb")
+#'    db <- src_postgres(host = "localhost", user="postgres", 
+#'                       password="postgres", dbname = "imdb")
 #'   }
 #'   imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
 #'   imdb %>%
@@ -31,8 +32,7 @@
 #' \dontrun{
 #'  if (require(RMySQL)) {
 #'    # must have pre-existing database "imdb"
-#'    db <- src_mysql(default.file = path.expand("~/.my.cnf"), 
-#'                    group = "scidb", user = NULL, password = NULL, dbname = "imdb")
+#'    db <- src_mysql_cnf(dbname = "imdb")
 #'   }
 #'   imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
 #'   imdb %>%
@@ -61,7 +61,8 @@
 #' 
 
 
-etl_extract.etl_imdb <- function(obj, tables = 
+etl_extract.etl_imdb <- function(obj, 
+                                 tables = 
                                    c("movies", "actors", "actresses", "directors"), 
                                  all.tables = FALSE, ...) {
   
@@ -79,15 +80,15 @@ etl_extract.etl_imdb <- function(obj, tables =
   }
   
   remotes <- paste0(src, files)
-  locals <- paste0(attr(obj, "raw_dir"), "/", files)
-  mapply(download.file, remotes, locals)
+  etl::smart_download(obj, remotes)
   
   invisible(obj)
 }
 
 #' @rdname etl_extract.etl_imdb
 #' @param path_to_imdbpy2sql a path to the IMDB2SQL Python script provided by
-#' IMDBPy. If NULL -- the default -- will attempt to find it using \code{\link{findimdbpy2sql}}.
+#' IMDBPy. If NULL -- the default -- will attempt to find it using 
+#' \code{\link{findimdbpy2sql}}.
 #' @param password Must re-enter password unless your password is blank. The real
 #' password will not be shown in messages.
 #' @details 
@@ -101,7 +102,9 @@ etl_extract.etl_imdb <- function(obj, tables =
 #' @importFrom dplyr tbl
 
 
-etl_load.etl_imdb <- function(obj, schema = TRUE, path_to_imdbpy2sql = NULL, password = "", ...) {
+etl_load.etl_imdb <- function(obj, schema = TRUE, 
+                              path_to_imdbpy2sql = NULL, 
+                              password = "", ...) {
   
   db_info <- DBI::dbGetInfo(obj$con)
   
@@ -116,7 +119,12 @@ etl_load.etl_imdb <- function(obj, schema = TRUE, path_to_imdbpy2sql = NULL, pas
     args <- " --sqlite-transactions"
   }
   
-  dsn <- paste0(db_type, "://", db_info$user, ":", password, "@", db_info$host, "/", db_info$dbname)
+  if (nchar(password) == 0) {
+    warning("Password argument is blank! A valid password is required.")
+  }
+  
+  dsn <- paste0(db_type, "://", db_info$user, ":", password, "@", 
+                db_info$host, "/", db_info$dbname)
   
   if (is.null(path_to_imdbpy2sql)) {
     path_to_imdbpy2sql <- findimdbpy2sql(attr(obj, "dir"))
@@ -130,8 +138,7 @@ etl_load.etl_imdb <- function(obj, schema = TRUE, path_to_imdbpy2sql = NULL, pas
   message(paste("Ran", gsub(password, "<password>", cmd)))
   
   # check to see if the import worked. If not, try a workaround
-  n <- nrow(dplyr::tbl(obj, "title"))
-  if (n < 1) {
+  if (is.na(dplyr::tbl(obj, "title"))) {
    etl_load_data(obj, ...) 
   }
   invisible(obj)

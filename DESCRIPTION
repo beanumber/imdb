@@ -1,6 +1,6 @@
 Package: imdb
 Title: Populate a database with data from the IMDB
-Version: 0.0.2.9001
+Version: 0.0.2.9002
 Authors@R: person("Ben", "Baumer", email = "ben.baumer@gmail.com",
                   role = c("aut", "cre"))
 Description: Populate a database with data from the IMDB. This package will
