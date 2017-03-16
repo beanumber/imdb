@@ -137,6 +137,10 @@ etl_load.etl_imdb <- function(obj, path_to_imdbpy2sql = NULL,
   system(cmd)
   message(paste("Ran", gsub(password, "<password>", cmd)))
   
+  # move all derivative files to load directory
+  files <- list.files(attr(obj, "raw_dir"), full.names = TRUE, pattern = ".[^gz]$")
+  file.rename(files, file.path(attr(obj, "load_dir"), basename(files)))
+  
   # check to see if the import worked. If not, try a workaround
   if (is.na(dplyr::tbl(obj, "title"))) {
    etl_load_data(obj, ...) 
@@ -159,7 +163,7 @@ etl_load_data.src_mysql <- function(obj, ...) {
   file_names <- list.files(load_dir, pattern = "\\.csv")
   table_names <- gsub("\\.csv", "", file_names)
   message(paste("Writing", table_names, "to the database..."))
-  mapply(FUN = DBI::dbWriteTable, table_names, paste0(load_dir, "/", file_names), 
+  mapply(FUN = DBI::dbWriteTable, table_names, file.path(load_dir, file_names), 
          MoreArgs = list(conn = obj$con, append = TRUE, header = FALSE, ...))
   invisible(obj)
 }

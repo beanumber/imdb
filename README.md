@@ -50,7 +50,7 @@ imdb <- etl("imdb", db = db, dir = "~/dumps/imdb/")
 Performing the ETL steps
 ------------------------
 
-The first phase is to **E**xtract the data from IMDB. This may take a while. There are 49 files that take up approximately 2 GB on disk. By default, only the `movies`, `actors`, `actresses`, and `directors` files will be downloaded, but even these take up more then 500 MB of disk space.
+The first phase is to **E**xtract the data from IMDB. This may take a while. There are 47 files that take up approximately 2 GB on disk. By default, only the `movies`, `actors`, `actresses`, and `directors` files will be downloaded, but even these take up more then 500 MB of disk space.
 
 ``` r
 imdb %>%
@@ -61,14 +61,14 @@ Mercifully, there is no **T**ransform phase for these data. However, the **L**oa
 
 The load phase leverages the Python module `IMDbPy`, which also has external dependencies. Please see the [.travis.yml](https://github.com/beanumber/imdb/blob/master/.travis.yml) file for a list of those dependencies (on Ubuntu -- your configuration may be different).
 
-You may want to leave this running. To load the full set of files it took about 20 minutes and occupied about 9.5 gigabytes on disk.
+You may want to leave this running. To load the full set of files it took about 90 minutes and occupied about 9.5 gigabytes on disk.
 
 ``` r
 imdb %>%
   etl_load()
 ```
 
-    # TIME TOTAL TIME TO INSERT/WRITE DATA : 21min, 13sec (wall) 20min, 59sec (user) 0min, 8sec (system)
+    # TIME FINAL : 88min, 20sec (wall) 25min, 46sec (user) 0min, 11sec (system)
 
 ``` r
 summary(imdb)
@@ -76,8 +76,8 @@ summary(imdb)
 
     ## files:
     ##    n     size                          path
-    ## 1 12 3.242 GB  /home/bbaumer/dumps/imdb/raw
-    ## 2  0     0 GB /home/bbaumer/dumps/imdb/load
+    ## 1 47 1.915 GB  /home/bbaumer/dumps/imdb/raw
+    ## 2 19 7.037 GB /home/bbaumer/dumps/imdb/load
 
     ##       Length Class           Mode       
     ## con   1      MySQLConnection S4         
@@ -87,11 +87,20 @@ summary(imdb)
 Query the database
 ------------------
 
-Once everything is completed, you can query your fresh copy of the IMDB.
+Once everything is completed, you can query your fresh copy of the IMDB to find all of the *Star Wars* movies:
 
 ``` r
 movies <- imdb %>%
   tbl("title")
 movies %>%
-  filter(title == "Star Wars")
+  filter(title == "Star Wars" & kind_id == 1)
 ```
+
+    ## Source:   query [?? x 12]
+    ## Database: mysql 5.7.17-0ubuntu0.16.04.1 [bbaumer@localhost:/imdb]
+    ## 
+    ##        id     title imdb_index kind_id production_year imdb_id
+    ##     <int>     <chr>      <chr>   <int>           <int>   <int>
+    ## 1 3850123 Star Wars       <NA>       1            1977      NA
+    ## # ... with 6 more variables: phonetic_code <chr>, episode_of_id <int>,
+    ## #   season_nr <int>, episode_nr <int>, series_years <chr>, md5sum <chr>
