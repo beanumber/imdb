@@ -1,4 +1,4 @@
-#' movies
+#' Set up local IMDB
 #' 
 #' @description Download the raw data files from IMDB
 #' 
@@ -12,6 +12,7 @@
 #' the tables. Default is \code{FALSE}.
 #' 
 #' @import etl
+#' @importFrom utils read.csv
 #' @export
 #' @examples
 #' # Connect using default RSQLite database
@@ -68,7 +69,7 @@ etl_extract.etl_imdb <- function(obj,
   
   src <- "ftp://ftp.fu-berlin.de/pub/misc/movies/database/"
   
-  file_list <- read.csv(paste0(src, "filesizes"), sep = " ", header = FALSE)
+  file_list <- utils::read.csv(paste0(src, "filesizes"), sep = " ", header = FALSE)
   files <- paste0(as.character(file_list$V1), ".gz")
   
   if (all.tables) {
@@ -102,8 +103,7 @@ etl_extract.etl_imdb <- function(obj,
 #' @importFrom dplyr tbl
 
 
-etl_load.etl_imdb <- function(obj, schema = TRUE, 
-                              path_to_imdbpy2sql = NULL, 
+etl_load.etl_imdb <- function(obj, path_to_imdbpy2sql = NULL, 
                               password = "", ...) {
   
   db_info <- DBI::dbGetInfo(obj$con)
