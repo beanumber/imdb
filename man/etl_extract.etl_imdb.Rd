@@ -97,4 +97,3 @@ imdb <- etl("imdb")
   
 }
 }
-

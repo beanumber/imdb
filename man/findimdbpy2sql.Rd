@@ -18,4 +18,3 @@ A utility function to locate the \code{imdbpy2sql} Python script
 \examples{
 script <- findimdbpy2sql()
 }
-

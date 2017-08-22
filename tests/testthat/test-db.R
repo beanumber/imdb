@@ -7,7 +7,8 @@ test_that("instantiation works", {
   expect_true("etl_imdb" %in% class(imdb))
   expect_true("etl" %in% class(imdb))
   expect_true("src" %in% class(imdb))
-  expect_true("src_sqlite" %in% class(imdb))
+  expect_true("src_dbi" %in% class(imdb))
+  expect_true("src_sql" %in% class(imdb))
 })
 
 # test_that("mysql connects", {
@@ -19,3 +20,6 @@ test_that("instantiation works", {
 #   expect_true("src_mysql" %in% class(imdb))
 #   expect_gt(length(DBI::dbListTables(imdb$con)), 0)
 # })
+
+
+
