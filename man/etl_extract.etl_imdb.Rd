@@ -7,7 +7,7 @@
 \alias{etl_load_data.src_mysql}
 \title{Set up local IMDB}
 \source{
-IMDB: \url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/}
+IMDB: \url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/temporaryaccess/}
 
 IMDbPy: \url{http://imdbpy.sourceforge.net/}
 }
@@ -15,8 +15,8 @@ IMDbPy: \url{http://imdbpy.sourceforge.net/}
 \method{etl_extract}{etl_imdb}(obj, tables = c("movies", "actors",
   "actresses", "directors"), all.tables = FALSE, ...)
 
-\method{etl_load}{etl_imdb}(obj, path_to_imdbpy2sql = NULL, password = "",
-  ...)
+\method{etl_load}{etl_imdb}(obj, path_to_imdbpy2sql = NULL,
+  password = "", ...)
 
 etl_load_data(obj, ...)
 

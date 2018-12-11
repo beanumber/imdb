@@ -1,6 +1,6 @@
 Package: imdb
 Title: Populate a database with data from the IMDB
-Version: 0.0.2.9004
+Version: 0.0.2.9005
 Date: 2017-08-31
 Authors@R: person("Benjamin S.", "Baumer", email = "ben.baumer@gmail.com",
                   role = c("aut", "cre"))
@@ -11,7 +11,10 @@ Description: Populate a database with data from the IMDB. This package will
 Imports:
     R.utils,
     dplyr,
-    DBI
+    DBI,
+    jsonlite,
+    readr,
+    tibble
 Depends:
     R (>= 3.1.0),
     etl
@@ -24,8 +27,9 @@ Suggests:
     rmarkdown,
     testthat
 License: GPL (>=2)
+SystemRequirements: python-imdbpy python-sqlalchemy python-sqlobject python-mysqldb
 URL: https://github.com/beanumber/imdb
 BugReports: https://github.com/beanumber/imdb/issues
 VignetteBuilder: knitr
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

@@ -57,7 +57,7 @@
 #'     arrange(nr_order)
 #'   
 #' }
-#' @source IMDB: \url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/}
+#' @source IMDB: \url{ftp://ftp.fu-berlin.de/pub/misc/movies/database/temporaryaccess/}
 #' @source IMDbPy: \url{http://imdbpy.sourceforge.net/}
 #' 
 
@@ -67,7 +67,7 @@ etl_extract.etl_imdb <- function(obj,
                                    c("movies", "actors", "actresses", "directors"), 
                                  all.tables = FALSE, ...) {
   
-  src <- "ftp://ftp.fu-berlin.de/pub/misc/movies/database/"
+  src <- "ftp://ftp.fu-berlin.de/pub/misc/movies/database/temporaryaccess/"
   
   file_list <- utils::read.csv(paste0(src, "filesizes"), sep = " ", header = FALSE)
   files <- paste0(as.character(file_list$V1), ".gz")
@@ -111,7 +111,7 @@ etl_load.etl_imdb <- function(obj, path_to_imdbpy2sql = NULL,
   if ("src_postgres" %in% class(obj)) {
     db_type <- "postgres"
     args <- " "
-  } else if ("src_mysql" %in% class(obj)) {
+  } else if ("MySQLConnection" %in% class(obj$con)) {
     db_type <- "mysql"
     args <- " --mysql-force-myisam"
   } else {
