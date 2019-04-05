@@ -3,7 +3,7 @@
 Getting Started
 ---------------
 
-`imdb` is a light package that leverages the the Python module [`IMDbPy`](https://github.com/alberanid/imdbpy) and the [`etl`](http://www.github.com/beanumber/etl) framework to make mirroring the IMDB in SQL painless, with user interaction taking place entirely within R.
+`imdb` is a light package that leverages the Python module [`IMDbPy`](https://github.com/alberanid/imdbpy) and the [`etl`](http://www.github.com/beanumber/etl) framework to make mirroring the IMDB in SQL painless, with user interaction taking place entirely within R.
 
 ### Prerequisities
 
